@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard | EduERP{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+{% block page_subtitle %}The groups you are attending{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card violet">
+    <span class="stat-icon">👥</span>
+    <div class="stat-label">My Groups</div>
+    <div class="stat-value">{{ groups.count }}</div>
+  </div>
+  <div class="stat-card orange">
+    <span class="stat-icon">⭐</span>
+    <div class="stat-label">My XP</div>
+    <div class="stat-value">{{ user.student_info.xp }}</div>
+  </div>
+  <div class="stat-card green">
+    <span class="stat-icon">💰</span>
+    <div class="stat-label">My Balance</div>
+    <div class="stat-value">${{ user.student_info.balance }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">My Groups</div>
+  {% if groups %}
+  <div class="grid-cards">
+    {% for group in groups %}
+    <a href="{% url 'group_detail' group.pk %}" class="link-card">
+      <div class="card-meta" style="margin-top: 0; margin-bottom: 10px;">
+        <span class="badge badge-blue">{{ group.course.title }}</span>
+        <span class="badge badge-gray">Level {{ group.level }}</span>
+      </div>
+      <h3>{{ group.name }}</h3>
+      <p>Teacher: {{ group.teacher.get_full_name|default:"—" }}</p>
+      <div class="card-meta">
+        <span class="badge badge-green">{{ group.lessons.count }} lessons</span>
+        <span class="badge badge-violet">{{ group.students.count }} students</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <p>You are not assigned to any group yet. Ask your manager to add you to one.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

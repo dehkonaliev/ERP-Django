@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Manage Groups | EduERP{% endblock %}
+{% block page_title %}Manage Student Groups{% endblock %}
+{% block page_subtitle %}{{ student.get_full_name|default:student.username }} (@{{ student.username }}){% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    <p class="card-subtitle">Tick the groups this student should belong to.</p>
+    <div class="form-group">
+      <label>Groups</label>
+      <div class="checkbox-list">
+        {% for group in form.groups %}
+        <label class="checkbox-row">
+          {{ group.tag }}
+          <span>{{ group.choice_label }}</span>
+        </label>
+        {% endfor %}
+        {% if not form.groups.field.queryset %}
+        <div class="empty-state" style="padding: 20px;">
+          <div class="empty-icon">👥</div>
+          <p>No groups exist yet.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save Groups</button>
+      <a class="btn btn-secondary" href="{% url 'student_detail' student.pk %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

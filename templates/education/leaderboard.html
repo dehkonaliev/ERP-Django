@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard | EduERP{% endblock %}
+{% block page_title %}Leaderboard 🏆{% endblock %}
+{% block page_subtitle %}Students ranked by experience points{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="filter-bar">
+    <a class="pill {% if current_filter == 'all' %}active{% endif %}" href="{% url 'leaderboard' %}?group=all">All students</a>
+    {% for g in all_groups %}
+    <a class="pill {% if current_filter == g.pk|stringformat:'s' %}active{% endif %}" href="{% url 'leaderboard' %}?group={{ g.pk }}">{{ g.name }}</a>
+    {% endfor %}
+  </div>
+
+  {% if leaderboard_list %}
+  <!-- Podium: top 3 -->
+  <div class="leaderboard-podium">
+    {% for item in leaderboard_list %}
+      {% if forloop.counter0 < 3 %}
+      <div class="podium-item podium-{{ forloop.counter }}" {% if item.student == user %}style="outline: 3px solid var(--primary); border-radius: 14px; padding: 12px;"{% endif %}>
+        <div class="podium-avatar">{{ item.student.first_name|default:item.student.username|first }}</div>
+        <div class="podium-rank">#{{ forloop.counter }}</div>
+        <strong>{{ item.student.get_full_name|default:item.student.username }}</strong>
+        <span class="podium-xp">⭐ {{ item.xp }} XP</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Student</th><th>XP</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in leaderboard_list %}
+        <tr {% if item.student == user %}style="background: #f5f3ff;"{% endif %}>
+          <td><strong style="color: var(--muted);">#{{ forloop.counter }}</strong></td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar-sm">{{ item.student.first_name|default:item.student.username|first }}</div>
+              <div>
+                <strong>{{ item.student.get_full_name|default:item.student.username }}</strong>
+                {% if item.student == user %}<span class="badge badge-violet" style="margin-left: 6px;">You</span>{% endif %}
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-orange">⭐ {{ item.xp }} XP</span></td>
+          <td>
+            {% if user.is_manager or user.is_teacher or item.student == user %}
+            <a class="btn btn-sm btn-secondary" href="{% url 'student_detail' item.student.pk %}">Profile</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🏆</div>
+    <p>No students on the leaderboard yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

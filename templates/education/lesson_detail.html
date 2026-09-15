@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load youtube %}
+{% block title %}{{ lesson.title }} | EduERP{% endblock %}
+{% block page_title %}{{ lesson.title }}{% endblock %}
+{% block page_subtitle %}{{ group.name }} · {{ group.course.title }}{% endblock %}
+
+{% block content %}
+<div class="action-group" style="margin-bottom: 20px;">
+  <a class="btn btn-secondary" href="{% url 'group_detail' group.pk %}">← Back to group</a>
+  {% if user.is_teacher and user == group.teacher %}
+  <a class="btn btn-primary" href="{% url 'lesson_edit' lesson.pk %}">Edit Lesson</a>
+  <a class="btn btn-green" href="{% url 'attendance_view' lesson.pk %}">Mark Attendance</a>
+  <a class="btn btn-primary" href="{% url 'homework_create' lesson.pk %}">+ Homework</a>
+  <form method="post" action="{% url 'lesson_delete' lesson.pk %}" style="display: inline;" onsubmit="return confirm('Delete this lesson?');">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% if lesson.video %}
+  <div class="video-wrap">
+    <iframe
+      src="{{ lesson.video|youtube_embed }}"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+  {% endif %}
+  <div class="card-title">About this lesson</div>
+  <p style="white-space: pre-wrap; color: var(--text);">{{ lesson.context|default:"No description for this lesson." }}</p>
+  <div class="card-meta">
+    <span class="badge badge-gray">Created: {{ lesson.created_at|date:"M d, Y H:i" }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Homework ({{ homeworks.count }})</div>
+  {% if homeworks %}
+  {% for hw in homeworks %}
+  <div class="lesson-item" style="align-items: flex-start;">
+    <div class="lesson-num">📝</div>
+    <div class="lesson-info">
+      <h4>{{ hw.task }}</h4>
+      <p>File: {% if hw.file %}<a href="{{ hw.file.url }}">Download</a>{% else %}—{% endif %} · {{ hw.submissions.count }} submission{% if hw.submissions.count != 1 %}s{% endif %}</p>
+    </div>
+    <a class="btn btn-sm btn-secondary" href="{% url 'homework_detail' hw.pk %}">Open</a>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📝</div><p>No homework yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

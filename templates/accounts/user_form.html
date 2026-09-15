@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Create User | EduERP{% endblock %}
+{% block page_title %}Create User{% endblock %}
+{% block page_subtitle %}Only managers can create users with passwords{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="errorlist">{{ form.non_field_errors }}</div>{% endif %}
+
+    <div class="form-group">
+      <label>Role</label>
+      <select class="form-control" name="role" id="id_role">
+        <option value="student" {% if form.role.value == 'student' %}selected{% endif %}>Student</option>
+        <option value="teacher" {% if form.role.value == 'teacher' %}selected{% endif %}>Teacher</option>
+        <option value="manager" {% if form.role.value == 'manager' %}selected{% endif %}>Manager</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="subject-group" style="display: none;">
+      <label>Subject</label>
+      <select class="form-control" name="subject">
+        <option value="physics">Physics</option>
+        <option value="math">Mathematics</option>
+        <option value="chemistry">Chemistry</option>
+        <option value="biology">Biology</option>
+        <option value="cs">Computer Science</option>
+        <option value="english">English</option>
+        <option value="history">History</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="id_username">Username</label>
+      {{ form.username }}
+      {{ form.username.errors }}
+    </div>
+    <div class="form-group">
+      <label for="id_first_name">First name</label>
+      {{ form.first_name }}
+    </div>
+    <div class="form-group">
+      <label for="id_last_name">Last name</label>
+      {{ form.last_name }}
+    </div>
+    <div class="form-group">
+      <label for="id_email">Email</label>
+      {{ form.email }}
+    </div>
+    <div class="form-group">
+      <label for="id_phone_number">Phone number</label>
+      {{ form.phone_number }}
+    </div>
+    <div class="form-group">
+      <label for="id_date_of_birth">Date of birth</label>
+      {{ form.date_of_birth }}
+      <div class="help-text">Format: YYYY-MM-DD</div>
+    </div>
+    <div class="form-group">
+      <label for="id_password1">Password</label>
+      {{ form.password1 }}
+      {{ form.password1.errors }}
+    </div>
+    <div class="form-group">
+      <label for="id_password2">Confirm password</label>
+      {{ form.password2 }}
+      {{ form.password2.errors }}
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Create User</button>
+      <a class="btn btn-secondary" href="{% url 'manager_dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var roleSelect = document.getElementById('id_role');
+  var subjectGroup = document.getElementById('subject-group');
+  function updateSubject() {
+    subjectGroup.style.display = roleSelect.value === 'teacher' ? 'block' : 'none';
+  }
+  roleSelect.addEventListener('change', updateSubject);
+  updateSubject();
+</script>
+{% endblock %}

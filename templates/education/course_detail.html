@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} | EduERP{% endblock %}
+{% block page_title %}{{ course.title }}{% endblock %}
+{% block page_subtitle %}{{ course.description }}{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">⏳</span>
+    <div class="stat-label">Duration</div>
+    <div class="stat-value">{{ course.duration }} mo</div>
+  </div>
+  <div class="stat-card green">
+    <span class="stat-icon">💳</span>
+    <div class="stat-label">Lesson Price</div>
+    <div class="stat-value">${{ course.lesson_price }}</div>
+  </div>
+  <div class="stat-card violet">
+    <span class="stat-icon">👥</span>
+    <div class="stat-label">Groups</div>
+    <div class="stat-value">{{ groups.count }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Groups on this course</div>
+  {% if groups %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Group</th><th>Level</th><th>Teacher</th><th>Students</th></tr></thead>
+      <tbody>
+        {% for g in groups %}
+        <tr>
+          <td><a href="{% url 'group_detail' g.pk %}"><strong>{{ g.name }}</strong></a></td>
+          <td>Month {{ g.level }}</td>
+          <td>{{ g.teacher.get_full_name|default:"—" }}</td>
+          <td><span class="badge badge-blue">{{ g.students.count }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">👥</div><p>{% if user.is_teacher %}You have no groups on this course yet.{% elif user.is_student %}You are not in any group of this course.{% else %}No groups for this course yet.{% endif %}</p></div>
+  {% endif %}
+</div>
+{% endblock %}

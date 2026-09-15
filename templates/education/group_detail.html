@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} | EduERP{% endblock %}
+{% block page_title %}{{ group.name }}{% endblock %}
+{% block page_subtitle %}{{ group.course.title }} · Level {{ group.level }}{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 30px;">
+  <div style="font-size: 44px; margin-bottom: 8px;">👥</div>
+  <h3 style="font-size: 22px;">{{ group.course.title }}</h3>
+  <div style="margin-top: 10px;">
+    <span class="badge badge-violet">Teacher: {{ group.teacher.get_full_name|default:"—" }}</span>
+    <span class="badge badge-blue">Level: {{ group.level }}</span>
+    <span class="badge badge-green">Lesson price: ${{ group.course.lesson_price }}</span>
+    <span class="badge badge-orange">Teacher share: {{ group.teacher_share_percent }}%</span>
+  </div>
+</div>
+
+{% if user.is_manager %}
+<div class="action-group" style="margin-bottom: 20px;">
+  <a class="btn btn-secondary" href="{% url 'group_edit' group.pk %}">Edit Group</a>
+</div>
+{% endif %}
+
+{% if user.is_teacher and user == group.teacher %}
+<div class="action-group" style="margin-bottom: 20px;">
+  <a class="btn btn-primary" href="{% url 'lesson_create' group.pk %}">+ New Lesson</a>
+</div>
+{% endif %}
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Lessons ({{ lessons.count }})</div>
+    {% if lessons %}
+    {% for lesson in lessons %}
+    <a class="lesson-item" href="{% url 'lesson_detail' lesson.pk %}">
+      <div class="lesson-num">{{ lesson.order }}</div>
+      <div class="lesson-info">
+        <h4>{{ lesson.title }}</h4>
+        <p>{{ lesson.created_at|date:"M d, Y" }}</p>
+      </div>
+      {% if user.is_teacher and user == group.teacher %}
+      <span class="badge badge-blue">{{ lesson.homeworks.count }} HW</span>
+      {% endif %}
+    </a>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">📖</div><p>No lessons yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Students ({{ students.count }})</div>
+    {% if students %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Student</th><th>XP</th>{% if not user.is_student %}<th>Balance</th>{% endif %}</tr></thead>
+        <tbody>
+          {% for st in students %}
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="avatar-sm">{{ st.first_name|default:st.username|first }}</div>
+                <div>
+                  <strong>{{ st.get_full_name|default:st.username }}</strong>
+                  <span>@{{ st.username }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{% if st.student_info %}<span class="badge badge-orange">⭐ {{ st.student_info.xp }}</span>{% else %}<span class="badge badge-gray">—</span>{% endif %}</td>
+            {% if not user.is_student %}
+            <td>{% if st.student_info %}<span class="badge badge-green">${{ st.student_info.balance }}</span>{% else %}<span class="badge badge-gray">—</span>{% endif %}</td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">🎓</div><p>No students in this group.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

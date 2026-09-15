@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard | EduERP{% endblock %}
+{% block page_title %}Teacher Dashboard{% endblock %}
+{% block page_subtitle %}Manage your groups, lessons and submissions{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card violet">
+    <span class="stat-icon">👥</span>
+    <div class="stat-label">My Groups</div>
+    <div class="stat-value">{{ groups.count }}</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">📖</span>
+    <div class="stat-label">Lessons</div>
+    <div class="stat-value">{{ lessons.count }}</div>
+  </div>
+  <div class="stat-card orange">
+    <span class="stat-icon">⏳</span>
+    <div class="stat-label">Pending Submissions</div>
+    <div class="stat-value">{{ pending_submissions.count }}</div>
+  </div>
+  <div class="stat-card green">
+    <span class="stat-icon">💰</span>
+    <div class="stat-label">My Balance</div>
+    <div class="stat-value">${{ user.teacher_info.balance }}</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">My Groups</div>
+    {% if groups %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Course</th><th>Level</th><th>Students</th></tr></thead>
+        <tbody>
+          {% for g in groups %}
+          <tr>
+            <td><a href="{% url 'group_detail' g.pk %}"><strong>{{ g.name }}</strong></a></td>
+            <td>{{ g.course.title }}</td>
+            <td>Month {{ g.level }}</td>
+            <td><span class="badge badge-blue">{{ g.students.count }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">👥</div><p>No groups assigned yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pending Submissions</div>
+    {% if pending_submissions %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Student</th><th>Homework</th><th></th></tr></thead>
+        <tbody>
+          {% for s in pending_submissions %}
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="avatar-sm">{{ s.student.first_name|default:s.student.username|first }}</div>
+                <div>
+                  <strong>{{ s.student.get_full_name|default:s.student.username }}</strong>
+                  <span>{{ s.homework.lesson.group.name }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ s.homework.task|truncatechars:30 }}</td>
+            <td>
+              <a class="btn btn-sm btn-primary" href="{% url 'grade_submission' s.pk %}">Grade</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">🎉</div><p>All caught up! No pending submissions.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

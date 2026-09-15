@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | EduERP{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}View all teachers in the system{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-title">
+    {{ title }}
+    <a class="btn btn-sm btn-primary" href="{% url 'create_user' %}">+ Create User</a>
+  </div>
+  {% if teachers %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Teacher</th>
+          <th>Subject</th>
+          <th>Balance</th>
+          <th>Groups</th>
+          <th>Phone</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in teachers %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="avatar-sm">{{ t.first_name|default:t.username|first }}</div>
+              <div>
+                <strong>{{ t.get_full_name|default:t.username }}</strong>
+                <span>@{{ t.username }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            {% if t.teacher_info %}<span class="badge badge-violet">{{ t.teacher_info.get_subject_display }}</span>
+            {% else %}<span class="badge badge-gray">—</span>{% endif %}
+          </td>
+          <td>
+            {% if t.teacher_info %}<span class="badge badge-green">${{ t.teacher_info.balance }}</span>
+            {% else %}<span class="badge badge-gray">—</span>{% endif %}
+          </td>
+          <td><span class="badge badge-blue">{{ t.teaching_groups.count }}</span></td>
+          <td>{{ t.phone_number|default:"—" }}</td>
+          <td>
+            <a class="btn btn-sm btn-secondary" href="{% url 'teacher_detail' t.pk %}">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">👨‍🏫</div>
+    <p>No teachers yet. <a href="{% url 'create_user' %}" style="color: var(--primary); font-weight: 600;">Create one!</a></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

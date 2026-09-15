@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Groups | EduERP{% endblock %}
+{% block page_title %}Groups{% endblock %}
+{% block page_subtitle %}Manage all groups, their teachers and students{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-title">
+    All Groups
+    <a class="btn btn-sm btn-primary" href="{% url 'group_create' %}">+ Create Group</a>
+  </div>
+  {% if groups %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Course</th>
+          <th>Teacher</th>
+          <th>Level</th>
+          <th>Share</th>
+          <th>Students</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in groups %}
+        <tr>
+          <td><a href="{% url 'group_detail' g.pk %}"><strong>{{ g.name }}</strong></a></td>
+          <td>{{ g.course.title }}</td>
+          <td>{{ g.teacher.get_full_name|default:"—" }}</td>
+          <td>Month {{ g.level }}</td>
+          <td><span class="badge badge-violet">{{ g.teacher_share_percent }}%</span></td>
+          <td><span class="badge badge-blue">{{ g.students.count }}</span></td>
+          <td>{{ g.created_at|date:"M d, Y" }}</td>
+          <td>
+            <div class="action-group">
+              <a class="btn btn-sm btn-secondary" href="{% url 'group_detail' g.pk %}">View</a>
+              <a class="btn btn-sm btn-primary" href="{% url 'group_edit' g.pk %}">Edit</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <p>No groups yet. <a href="{% url 'group_create' %}" style="color: var(--primary); font-weight: 600;">Create the first group!</a></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

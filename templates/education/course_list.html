@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Courses | EduERP{% endblock %}
+{% block page_title %}Courses{% endblock %}
+{% block page_subtitle %}Browse all available courses{% endblock %}
+
+{% block content %}
+{% if user.is_manager %}
+<div class="action-group" style="margin-bottom: 20px;">
+  <a class="btn btn-primary" href="{% url 'course_create' %}">+ New Course</a>
+</div>
+{% endif %}
+
+<div class="grid-cards">
+  {% for course in courses %}
+  <a href="{% url 'course_detail' course.pk %}" class="link-card">
+    <h3>{{ course.title }}</h3>
+    <p>{{ course.description|truncatechars:120 }}</p>
+    <div class="card-meta">
+      <span class="badge badge-blue">⏳ {{ course.duration }} months</span>
+      <span class="badge badge-violet">💳 ${{ course.lesson_price }} / lesson</span>
+      <span class="badge badge-green">{{ course.groups.count }} groups</span>
+    </div>
+  </a>
+  {% empty %}
+  <div class="empty-state"><div class="empty-icon">📚</div><p>No courses yet.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | EduERP{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-group">
+      <label for="{{ form.name.id_for_label }}">Group name</label>
+      {{ form.name }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.course.id_for_label }}">Course</label>
+      {{ form.course }}
+      <div class="help-text">The lesson price comes from the course.</div>
+    </div>
+    <div class="form-group">
+      <label for="{{ form.teacher.id_for_label }}">Teacher</label>
+      {{ form.teacher }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.level.id_for_label }}">Level (month)</label>
+      {{ form.level }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.teacher_share.id_for_label }}">Teacher share</label>
+      {{ form.teacher_share }}
+      <div class="help-text">Part of the lesson payment that goes to the teacher.</div>
+    </div>
+    <div class="form-group">
+      <label for="{{ form.students.id_for_label }}">Attached students</label>
+      {{ form.students }}
+      <div class="help-text">Hold Ctrl/Cmd to select multiple. Only students are listed.</div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save Group</button>
+      <a class="btn btn-secondary" href="{% url 'manager_dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

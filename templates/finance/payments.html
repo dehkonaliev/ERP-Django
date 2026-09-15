@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Payments | EduERP{% endblock %}
+{% block page_title %}Payments{% endblock %}
+{% block page_subtitle %}All balance transactions in the system{% endblock %}
+
+{% block content %}
+<div class="card">
+  {% if user.is_manager %}
+  <div class="card-title">All Payments
+    <a class="btn btn-sm btn-primary" href="{% url 'student_list' %}">Top up a student</a>
+  </div>
+  {% if payments %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="avatar-sm">{{ p.student.first_name|default:p.student.username|first }}</div>
+              <div>
+                <strong>{{ p.student.get_full_name|default:p.student.username }}</strong>
+                <span>@{{ p.student.username }}</span>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-green">+${{ p.amount }}</span></td>
+          <td>{{ p.description }}</td>
+          <td>{{ p.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">💳</div><p>No payments recorded yet.</p></div>
+  {% endif %}
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">🔒</div><p>Only managers can view all payments.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

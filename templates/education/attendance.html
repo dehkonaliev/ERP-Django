@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load youtube %}
+{% block title %}Attendance | EduERP{% endblock %}
+{% block page_title %}Mark Attendance{% endblock %}
+{% block page_subtitle %}{{ lesson.title }} · {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-title">Students present?</div>
+  <p class="card-subtitle">
+    Students marked as <strong>absent</strong> are NOT charged. Present students are charged
+    <strong>${{ group.course.lesson_price }}</strong> and the teacher receives
+    <strong>${{ share_amount }}</strong> ({{ group.teacher_share_percent }}%).
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if students %}
+    {% for student in students %}
+    <div class="attendance-row">
+      <div class="user-cell">
+        <div class="avatar-sm">{{ student.first_name|default:student.username|first }}</div>
+        <div>
+          <strong>{{ student.get_full_name|default:student.username }}</strong>
+          <span>
+            Balance: {% if student.student_info %}${{ student.student_info.balance }}{% else %}$0.00{% endif %}
+          </span>
+        </div>
+      </div>
+      {% with att=attendances|get_item:student.pk %}
+      <label class="toggle">
+        <input type="checkbox" name="absent" value="{{ student.pk }}" {% if att and att.is_absent %}checked{% endif %}>
+        <span class="slider"></span>
+      </label>
+      {% endwith %}
+    </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save Attendance & Process Payments</button>
+      <a class="btn btn-secondary" href="{% url 'lesson_detail' lesson.pk %}">Cancel</a>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">🎓</div><p>No students in this group yet.</p></div>
+    {% endif %}
+  </form>
+</div>
+
+<script>
+  document.querySelectorAll('.toggle input').forEach(function (input) {
+    input.addEventListener('change', function () {
+      var label = input.closest('.toggle');
+      label.style.animation = 'none';
+      label.offsetHeight;
+      label.style.animation = 'pulse 0.25s ease';
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Submit Homework | EduERP{% endblock %}
+{% block page_title %}Submit Answer{% endblock %}
+{% block page_subtitle %}{{ homework.task|truncatechars:60 }}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-group">
+      <label for="{{ form.context.id_for_label }}">Your answer</label>
+      {{ form.context }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.file.id_for_label }}">Attach a file (optional)</label>
+      {{ form.file }}
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Submit</button>
+      <a class="btn btn-secondary" href="{% url 'homework_detail' homework.pk %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

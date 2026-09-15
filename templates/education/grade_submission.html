@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Grade Submission | EduERP{% endblock %}
+{% block page_title %}Grade Submission{% endblock %}
+{% block page_subtitle %}{{ submission.student.get_full_name|default:submission.student.username }} · {{ submission.homework.lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Student Answer</div>
+    <div class="user-cell" style="margin-bottom: 16px;">
+      <div class="avatar-sm">{{ submission.student.first_name|default:submission.student.username|first }}</div>
+      <div>
+        <strong>{{ submission.student.get_full_name|default:submission.student.username }}</strong>
+        <span>Submitted {{ submission.created_at|date:"M d, Y H:i" }}</span>
+      </div>
+    </div>
+    <p style="white-space: pre-wrap; background: #f8f9fd; padding: 16px; border-radius: 10px;">
+      {{ submission.context|default:"No text answer provided." }}
+    </p>
+    {% if submission.file %}
+    <div style="margin-top: 14px;">
+      <a class="btn btn-sm btn-secondary" href="{{ submission.file.url }}" target="_blank">📎 Download answer file</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card form-card">
+    <div class="card-title">Give Points</div>
+    <p class="card-subtitle">Points from 0 to 100. XP = points / 100 &times; 10 (integer).</p>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="form-group">
+        <label for="{{ form.points.id_for_label }}">Points</label>
+        {{ form.points }}
+        <div class="help-text">Example: 85 points → 8 XP, 100 points → 10 XP.</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save Grade</button>
+        <a class="btn btn-secondary" href="{% url 'homework_detail' submission.homework.pk %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

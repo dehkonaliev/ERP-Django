@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Create Course | EduERP{% endblock %}
+{% block page_title %}Create Course{% endblock %}
+{% block page_subtitle %}Set the lesson price for the course{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+      {{ field.errors }}
+    </div>
+    {% endfor %}
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Create Course</button>
+      <a class="btn btn-secondary" href="{% url 'manager_dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

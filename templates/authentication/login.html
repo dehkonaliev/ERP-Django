@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login | EduERP{% endblock %}
+{% block auth_content %}
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="brand-dot"></span>
+      <h1>Edu<span>ERP</span></h1>
+    </div>
+    <p class="sub">Sign in to your management system</p>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}" style="margin-bottom: 14px;">
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input class="auth-input" type="text" name="username" placeholder="Username" required autofocus>
+      <input class="auth-input" type="password" name="password" placeholder="Password" required>
+      <button class="btn btn-primary btn-block" type="submit" style="padding: 13px;">Sign In</button>
+    </form>
+  </div>
+</body>
+{% endblock %}

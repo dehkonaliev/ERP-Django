@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Homework | EduERP{% endblock %}
+{% block page_title %}Homework{% endblock %}
+{% block page_subtitle %}{{ lesson.title }} · {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="action-group" style="margin-bottom: 20px;">
+  <a class="btn btn-secondary" href="{% url 'lesson_detail' lesson.pk %}">← Back to lesson</a>
+  {% if is_teacher %}
+  <a class="btn btn-primary" href="{% url 'homework_edit' homework.pk %}">Edit</a>
+  {% endif %}
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Task</div>
+    <p style="white-space: pre-wrap;">{{ homework.task }}</p>
+    {% if homework.file %}
+    <div style="margin-top: 16px;">
+      <a class="btn btn-secondary" href="{{ homework.file.url }}" target="_blank">📎 Download attached file</a>
+    </div>
+    {% endif %}
+    <div class="card-meta" style="margin-top: 16px;">
+      <span class="badge badge-gray">Created: {{ homework.created_at|date:"M d, Y H:i" }}</span>
+    </div>
+  </div>
+
+  {% if is_student %}
+  <div class="card">
+    <div class="card-title">My Submission</div>
+    {% if my_submission %}
+    <div style="background: #f8f9fd; padding: 16px; border-radius: 10px; margin-bottom: 12px;">
+      <div class="card-meta" style="margin-top: 0; margin-bottom: 10px;">
+        <span class="badge {% if my_submission.is_graded %}badge-green{% else %}badge-gray{% endif %}">
+          {% if my_submission.is_graded %}Graded: {{ my_submission.points }}/100 · +{{ my_submission.earned_xp }} XP{% else %}Submitted, awaiting review{% endif %}
+        </span>
+      </div>
+      <p style="white-space: pre-wrap; font-size: 14px;">{{ my_submission.context|default:"No text." }}</p>
+      {% if my_submission.file %}
+      <div style="margin-top: 10px;"><a class="btn btn-sm btn-secondary" href="{{ my_submission.file.url }}" target="_blank">📎 My file</a></div>
+      {% endif %}
+    </div>
+    <p style="font-size: 13px; color: var(--muted);">You can't submit twice. Wait for the teacher to grade it.</p>
+    {% else %}
+    <a class="btn btn-primary btn-block" href="{% url 'submission_create' homework.pk %}">Submit Answer</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% if is_teacher %}
+<div class="card">
+  <div class="card-title">Submissions ({{ submissions.count }})</div>
+  {% if submissions %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Answer</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for s in submissions %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="avatar-sm">{{ s.student.first_name|default:s.student.username|first }}</div>
+              <div>
+                <strong>{{ s.student.get_full_name|default:s.student.username }}</strong>
+                <span>{{ s.created_at|date:"M d, H:i" }}</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ s.context|default:"No text"|truncatechars:50 }}{% if s.file %} <span class="badge badge-blue">has file</span>{% endif %}</td>
+          <td>
+            {% if s.is_graded %}
+            <span class="badge badge-blue">{{ s.points }}/100</span>
+            <span class="badge badge-orange">+{{ s.earned_xp }} XP</span>
+            {% else %}
+            <span class="badge badge-gray">pending</span>
+            {% endif %}
+          </td>
+          <td>
+            <a class="btn btn-sm {% if s.is_graded %}btn-secondary{% else %}btn-primary{% endif %}" href="{% url 'grade_submission' s.pk %}">
+              {% if s.is_graded %}Re-grade{% else %}Grade{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📝</div><p>No submissions yet.</p></div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
