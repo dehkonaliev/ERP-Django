@@ -10,24 +10,7 @@ from finance.models import Payment
 from .forms import GroupForm, ReplenishBalanceForm, CourseForm, StudentGroupsForm
 
 
-def manager_required(view_func):
-    from functools import wraps
 
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        if not request.user.is_manager():
-            messages.error(request, 'You do not have permission to access this page.')
-            return redirect('dashboard')
-        return view_func(request, *args, **kwargs)
-
-    return wrapper
-
-
-# ---------- DASHBOARD ----------
-
-@manager_required
 def manager_dashboard(request):
     total_students = CustomUser.objects.filter(role='student').count()
     total_teachers = CustomUser.objects.filter(role='teacher').count()
@@ -47,9 +30,7 @@ def manager_dashboard(request):
     return render(request, 'accounts/manager_dashboard.html', context)
 
 
-# ---------- USERS ----------
 
-@manager_required
 def create_user(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -67,7 +48,6 @@ def create_user(request):
     return render(request, 'accounts/user_form.html', {'form': form})
 
 
-@manager_required
 def student_list(request):
     students = CustomUser.objects.filter(role='student')
     context = {
@@ -77,7 +57,6 @@ def student_list(request):
     return render(request, 'accounts/user_list.html', context)
 
 
-@manager_required
 def teacher_list(request):
     teachers = CustomUser.objects.filter(role='teacher')
     context = {
@@ -150,15 +129,12 @@ def teacher_detail(request, pk):
     return render(request, 'accounts/teacher_detail.html', context)
 
 
-# ---------- GROUPS ----------
 
-@manager_required
 def group_list(request):
     groups = Group.objects.all().prefetch_related('course', 'teacher', 'students')
     return render(request, 'accounts/group_list.html', {'groups': groups})
 
 
-@manager_required
 def group_create(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -172,7 +148,6 @@ def group_create(request):
     return render(request, 'accounts/group_form.html', {'form': form, 'title': 'Create Group'})
 
 
-@manager_required
 def group_edit(request, pk):
     group = get_object_or_404(Group, pk=pk)
     if request.method == 'POST':
@@ -187,7 +162,6 @@ def group_edit(request, pk):
     return render(request, 'accounts/group_form.html', {'form': form, 'title': 'Edit Group'})
 
 
-@manager_required
 def student_add_to_group(request, pk):
     student = get_object_or_404(CustomUser, pk=pk, role='student')
     if request.method == 'POST':
@@ -222,9 +196,6 @@ def group_detail(request, pk):
     return render(request, 'education/group_detail.html', context)
 
 
-# ---------- COURSE ----------
-
-@manager_required
 def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
@@ -237,9 +208,7 @@ def course_create(request):
     return render(request, 'accounts/course_form.html', {'form': form})
 
 
-# ---------- FINANCE ----------
 
-@manager_required
 def replenish_balance(request, pk):
     student = get_object_or_404(CustomUser, pk=pk, role='student')
     student_info = get_object_or_404(StudentInfo, user=student)
