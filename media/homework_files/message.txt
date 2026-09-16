@@ -1,0 +1,181 @@
+1. QALQON himoyasi qanday rasmiylashtiriladi va to‘lov qanday qabul qilinadi?
+QALQON Telegram bot orqali rasmiylashtiriladi.
+Jarayon:
+Mijoz → QALQON bot → telefon ma’lumotlari → IMEI → boshlang‘ich foto/video → 199 999 so‘m to‘lov → to‘lov tasdiqlanishi → himoya aktivlashishi → elektron sertifikat.
+Himoya narxi: 199 999 UZS
+Muddat: 12 oy
+Himoya faqat to‘lov muvaffaqiyatli tasdiqlangandan keyin aktiv bo‘ladi.
+Telefonning IMEI raqami himoyaga biriktiriladi.
+To‘lovni avtomatik tekshirish kerak.
+Hozircha Uzum integratsiyasini ishlatmaslikka qaror qilmoqdamiz.
+Asosiy variant sifatida Click, keyinchalik kerak bo‘lsa Payme ham qo‘shilishi mumkin.
+Oddiy karta-kartaga pul o‘tkazish asosiy production mexanizm sifatida ishlatilmaydi, chunki avtomatik matching va payment verification muammoli.
+2. Himoyaning muddati, qamrovi va istisnolari qanday?
+Muddat: to‘lov/aktivatsiya sanasidan boshlab 12 oy.
+Qamrov:
+Telefon bilan bog‘liq texnik muammolar/ta’mirlash holatlari QALQON xizmatiga murojaat qilish uchun asos bo‘lishi mumkin. Bizning modelimizda zarar turini juda tor ro‘yxat bilan cheklash rejalashtirilmagan.
+Murojaatlar soni: 2 ta.
+1-murojaat → tasdiqlangan ta’mirlash summasining 100%
+2-murojaat → tasdiqlangan ta’mirlash summasining 50%
+qolgan 50%ni mijoz to‘laydi.
+Istisno:
+telefon yo‘qolishi;
+telefon o‘g‘irlanishi;
+firibgarlik yoki ataylab zarar yetkazish;
+IMEI mos kelmasligi;
+himoyaga kiritilmagan boshqa qurilmadan foydalanish;
+QALQON tasdig‘isiz ta’mirlashni boshlash.
+Muhim: telefon almashtirilsa, himoya yangi telefonga ko‘chmaydi. Himoya aynan ro‘yxatdan o‘tgan IMEI'ga bog‘langan.
+3. Murojaat statuslari va har bosqichda kim harakat qiladi?
+Tavsiya qilinadigan statuslar:
+SUBMITTED
+→ UNDER_REVIEW
+→ APPROVED
+→ IN_REPAIR
+→ PAYMENT_PENDING
+→ PAID
+→ COMPLETED
+Rad etilgan holat:
+REJECTED
+Jarayon:
+1. Mijoz
+muammoni yuboradi;
+foto/video yuboradi;
+ustani tanlaydi;
+kerakli ma’lumotlarni beradi.
+2. QALQON
+murojaatni tekshiradi;
+ta’mirlash smetasini ko‘rib chiqadi;
+qoplanadigan summani tasdiqlaydi yoki rad etadi.
+3. Usta
+diagnostika qiladi;
+muammo, ehtiyot qismlar, ish haqi va umumiy summani yuboradi;
+QALQON tasdig‘idan keyin ta’mirlashni amalga oshiradi.
+4. QALQON
+tasdiqlangan summani ustaga/service center'ga to‘laydi;
+mijozga tegishli bo‘lsa, uning 50% ulushini hisoblaydi.
+5. Murojaat
+ta’mirlash tugagach COMPLETED bo‘ladi.
+4. QALQON qoplaydigan ta’mirlash summasi qanday hisoblanadi?
+Hozirgi biznes model bo‘yicha:
+Usta → diagnostika → ta’mirlash smetasi → QALQON tekshiruvi → approved amount.
+Smetada:
+ehtiyot qismlar;
+servis/ish haqi;
+jami ta’mirlash summasi
+ko‘rsatiladi.
+QALQON tasdiqlagan summa asosida:
+1-murojaat:
+QALQON = 100%
+2-murojaat:
+QALQON = 50%
+Mijoz = 50%
+Hozircha biznes tomonidan qat’iy maksimal summa/limit belgilanmagan.
+Lekin development nuqtayi nazaridan bu juda muhim risk. Shu sababli kod limitni konfiguratsiya orqali qo‘yish imkonini beradigan qilib yozilsin, masalan:
+MAX_CLAIM_AMOUNT
+yoki keyinchalik telefon modeli bo‘yicha limit qo‘yish imkoniyati bo‘lsin.
+Muhim: summalarni hisoblashda floating-point ishlatilmasin. UZS integer yoki NUMERIC orqali hisoblanadi.
+5. Qaysi to‘lov tizimlari kerak?
+1-bosqich: Click.
+Uzum hozircha kerak emas.
+Arxitektura payment provider'ni keyinchalik almashtirish/qo‘shishga imkon berishi kerak:
+PaymentService
+ ├── Click
+ ├── Payme (future)
+ └── Other provider (future)
+Ya’ni butun bot Click'ga qattiq bog‘lanib qolmasin.
+Mijoz to‘lovi: 199 999 UZS.
+Keyinchalik QALQONning boshqa to‘lovlari ham bo‘ladi:
+technician payout;
+partner shop reward;
+technician 1% bonus;
+charity;
+refund/reversal.
+Ular customer payment'dan alohida accounting sifatida ko‘rilishi kerak.
+6. Sertifikat qanday ko‘rinishda bo‘ladi?
+Birinchi bosqichda Telegram ichida elektron sertifikat yetarli.
+Masalan:
+🛡 QALQON HIMoya sertifikati
+Sertifikat: QL-XXXXXX
+Mijoz: ...
+Telefon: ...
+IMEI: ****1234
+Boshlanishi: 10.09.2026
+Tugashi: 10.09.2027
+Murojaatlar: 2 ta
+1-murojaat: 100%
+2-murojaat: 50%
+Keyinchalik PDF sertifikat qo‘shiladi.
+Shuning uchun architecture PDF generation'ni keyinchalik qo‘shishga tayyor bo‘lsin.
+7. Telegram bot yetarlimi yoki web-admin panel ham kerakmi?
+Mijoz uchun: Telegram bot.
+Admin uchun: web-admin panel kerak.
+Lekin MVP bosqichida mavjud Telegram admin funksiyalaridan foydalanish mumkin. Pilot muvaffaqiyatli bo‘lgach, web-admin panelga o‘tiladi.
+Web-admin'da:
+Customers
+Devices
+IMEI
+Active protections
+Claims
+Payments
+Technicians
+Partner shops
+Payouts
+Audit log
+Statistics
+bo‘lishi kerak.
+8. Bitta himoyaga nechta qurilma biriktiriladi?
+Faqat 1 ta qurilma.
+Har bir QALQON himoyasi:
+1 customer + 1 device + 1 IMEI
+ga bog‘lanadi.
+Agar mijoz 2 ta telefon uchun himoya olsa, u holda 2 ta alohida protection bo‘ladi va har biri alohida to‘lanadi.
+Himoya boshqa IMEI'ga ko‘chirilmaydi.
+9. Hamkor do‘kon va ustalarning balans/pul hisob-kitobi qanday yuritiladi?
+Hamkor do‘kon
+Do‘kon QALQON sotuviga yordam beradi.
+Har bir muvaffaqiyatli sotuv uchun do‘konga partner reward beriladi.
+Aniq reward miqdori hozircha MVP uchun yakuniy belgilanmagan. Shuning uchun kodda hard-code qilinmasin.
+Kelajakda:
+Partner Shop Balance
++ reward
+- withdrawal
+= current balance
+ko‘rinishida yuritiladi.
+Hamkor usta
+QALQON hamkor ustasiga approved repair amount to‘lanadi.
+Misol:
+Ta’mirlash: 800 000 UZS
+QALQON:
+800 000 UZS → usta uchun ta’mirlash to‘lovi
+Qo‘shimcha hamkorlik bonusi:
+800 000 × 1% = 8 000 UZS
+Jami usta:
+808 000 UZS
+1% bonus faqat QALQON hamkor ustasi uchun.
+Bular alohida ledger/accounting yozuvlari sifatida saqlanishi kerak.
+Developer uchun eng muhim texnik talab
+Mavjud loyihani noldan qayta yozmang.
+Hozirgi QALQON bot:
+Node.js + Telegraf + PostgreSQL + Express
+asosida qurilgan.
+Asosiy vazifa:
+mavjud ishlayotgan funksiyalarni saqlab qolish, arxitekturani mustahkamlash va production'ga tayyorlash.
+Ayniqsa quyidagilarni to‘g‘ri qilish kerak:
+payment idempotency;
+duplicate webhook himoyasi;
+payment faqat haqiqatan tasdiqlangandan keyin protection activation;
+IMEI uniqueness;
+bitta device uchun bir nechta active protection'ni bloklash;
+claim hisob-kitoblarini server tomonda qilish;
+admin authorization;
+audit log;
+persistent sessions;
+transaction/rollback;
+payment reconciliation;
+webhook security;
+rate limiting;
+error handling;
+backup;
+logging.
+Real payment integratsiyasini production'ga chiqarishdan oldin provider'ning rasmiy API hujjatlari asosida implementatsiya qilinsin. API endpoint yoki webhook formatlari taxmin qilinmasin.

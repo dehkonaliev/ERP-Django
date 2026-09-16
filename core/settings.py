@@ -79,3 +79,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
 LOGIN_URL = 'login'
+
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

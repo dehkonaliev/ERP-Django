@@ -82,7 +82,6 @@ def student_detail(request, pk):
     if not (is_manager or is_self):
         messages.error(request, 'You can only view your own profile.')
         return redirect('dashboard')
-
     try:
         student_info = profile_user.student_info
     except StudentInfo.DoesNotExist:
